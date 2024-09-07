@@ -2,6 +2,12 @@ CLUSTER_NAME=observability-cluster
 CLUSTER_EXISTS = $(shell kind get clusters -q | grep $(CLUSTER_NAME))
 export KIND_CONFIG_FILE_NAME=kind.config.yaml
 
+COLOR_RESET = \033[0m
+COLOR_GREEN = \033[32m
+COLOR_YELLOW = \033[33m
+COLOR_BLUE = \033[34m
+
+
 # HELP
 # This will output the help for each task
 # thanks to https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
@@ -33,11 +39,35 @@ create-cluster: ## Create cluster k8s with cert-manager e metrics-server
 	kubectl get pods -n kube-system
 	@echo
 
-grafana: ## Deploy Grafana-Web
+grafana-stack: ## Deploy Stack Grafana [Grafana Web, Tempo, Loki and Prometheus]
 	@echo "#### Deploy Grafana-Web ####"
 	helm repo add grafana https://grafana.github.io/helm-charts --namespace monitoring
-	helm upgrade --install --wait --create-namespace --namespace monitoring grafana grafana/grafana -f grafana/values.yaml
-	kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=grafana -n monitoring --timeout=120s
+	helm upgrade --install --wait --create-namespace --namespace monitoring grafana grafana/grafana -f grafana/grafana.yaml
+	kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=grafana -n monitoring --timeout=30s
+	@echo ""
+
+	@echo "#### Deploy Grafana Tempo ####"
+	helm upgrade --install --wait --create-namespace --namespace monitoring tempo grafana/tempo -f grafana/tempo.yaml
+	kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=tempo -n monitoring --timeout=30s
+	@echo ""
+
+	@echo "#### Deploy Prometheus ####"
+	helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+	helm upgrade --install --wait --create-namespace --namespace monitoring prometheus prometheus-community/prometheus -f grafana/prometheus.yaml
+	kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=prometheus -n monitoring --timeout=30s
+	@echo ""
+
+	@echo "#### Deploy Grafana Loki ####"
+	helm upgrade --install --namespace monitoring loki grafana/loki -f grafana/loki.yaml
+	@echo ""
+
+	@echo "$(COLOR_GREEN)####################################################################$(COLOR_RESET)"
+	@echo "$(COLOR_GREEN)####                                                            ####$(COLOR_RESET)"
+	@echo "$(COLOR_GREEN)#### $(COLOR_YELLOW)Grafana access, run command: \"make grafana-port-forward\"$(COLOR_GREEN)   ####$(COLOR_RESET)"
+	@echo "$(COLOR_GREEN)####                 $(COLOR_BLUE)http://localhost:8080$(COLOR_GREEN)                      ####$(COLOR_RESET)"
+	@echo "$(COLOR_GREEN)####            Username: $(COLOR_BLUE)admin$(COLOR_GREEN) Password: $(COLOR_BLUE)admin$(COLOR_GREEN)                 ####$(COLOR_RESET)"
+	@echo "$(COLOR_GREEN)####################################################################$(COLOR_RESET)"
+
 
 grafana-port-forward: ## Port forward Grafana-Web
 	@echo "#### Port forward Grafana-Web ####"

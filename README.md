@@ -22,9 +22,11 @@ make help
 Make help Output 📋
 
 ```bash
-help                 "Help"
-create-cluster       "Create a Kubernetes kind cluster"
-delete-cluster       "Delete the Kubernetes cluster"
+help                    "Help"
+create-cluster          "Create a Kubernetes kind cluster"
+grafana-stack:          "Deploy Stack Grafana [Grafana Web, Tempo, Loki and Prometheus]"
+grafana-port-forward:   "Port forward Grafana-Web"
+delete-cluster          "Delete the Kubernetes cluster"
 ```
 
 ## Create a Kind Cluster 🏗️
@@ -38,12 +40,31 @@ make create-cluster
 
 > This will set up a Kubernetes environment using Kind, preconfigured with cert-manager for certificates and metrics-server for monitoring.
 
+## Deploy Grafana Stack 📦
+
+Deploy a Grafana stack to manage telemetry data, including trace, metrics and logs.
+
+```bash
+make grafana-stack
+```
+
+To access Grafana, run the following command:
+
+```bash
+grafana-port-forward
+```
+
+Then, open your browser and navigate to: http://localhost:8080
+
+Use the following credentials:
+- `Username: admin`
+- `Password: admin`
+
 ## Delete the Cluster 🗑️
 
 If you want to remove the cluster, use the following command:
 
 ```bash
-Copiar código
 make delete-cluster
 ```
 
