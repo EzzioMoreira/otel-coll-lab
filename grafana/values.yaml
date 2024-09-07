@@ -1,0 +1,45 @@
+# Grafana Helm Chart values for lab environment
+image:
+  # -- The Docker registry
+  registry: docker.io
+  # -- Docker image repository
+  repository: grafana/grafana
+  # Overrides the Grafana image tag whose default is the chart appVersion
+  tag: ""
+  pullPolicy: IfNotPresent
+
+# Administrator credentials when not using an existing secret
+adminUser: admin
+adminPassword: admin
+
+grafana:
+  grafana.ini:
+    auth:
+      disable_login_form: false  # O login deve estar habilitado se deseja usar admin/password
+    auth.anonymous:
+      enabled: false  # Desabilite o acesso anônimo se quiser usar o login com senha
+
+  # Disable persistence for lab environments
+  persistence:
+    enabled: false
+
+  # Disable service type load balancer to use ClusterIP (useful in local clusters)
+  service:
+    type: ClusterIP
+
+  # Set up minimal resources for lab
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 200m
+
+  # Enable minimal dashboards
+  dashboards: {}
+
+  # Minimal plugins for lab
+  plugins:
+    - grafana-piechart-panel
+    - grafana-simple-json-datasource
