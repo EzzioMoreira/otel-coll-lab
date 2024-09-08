@@ -74,4 +74,9 @@ make delete-cluster
 Feel free to contribute or open an issue if you encounter any problems! 
 
 Let me know if you need further tweaks!
-# otel-coll-lab
+
+# Exporter Endpoints
+
+- Grafana Tempo - Trace: tempo.monitoring.svc.cluster.local:4317
+- Grafana Loki - Logs:  http://loki.monitoring.com:3100/otlp/v1/logs
+- Prometheus - Metric: http://prometheus.monitoring.svc.cluster.local:9090/api/v1/write

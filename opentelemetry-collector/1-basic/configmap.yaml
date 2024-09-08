@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-coll-basic-config
+  namespace: opentelemetry
+  labels:
+    app: otel-coll-basic
+data:
+  collector-config.yaml: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+    processors:
+      batch:
+
+    exporters:
+      debug:
+        verbosity: detailed
+
+      otlp/tempo:
+        endpoint: tempo.monitoring.svc.cluster.local:4317
+      
+      otlphttp/loki:
+        endpoint: http://loki.monitoring.com:3100/otlp/v1/logs
+      
+      prometheusremotewrite:
+        endpoint: http://prometheus.monitoring.svc.cluster.local:9090/api/v1/write
+        resource_to_telemetry_conversion:
+          enabled: true
+
+    extensions:
+      health_check:
+      pprof:
+      zpages:
+
+    service:
+      extensions: [health_check, pprof, zpages]
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [otlp/tempo, debug]
+        metrics:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [prometheusremotewrite]
+        logs:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [otlphttp/loki]

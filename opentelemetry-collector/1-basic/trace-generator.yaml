@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: trace-generator
+  labels:
+    app: trace-generator
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: tracegen
+        image: ezmo/trace-generator:v0.0.1
+        env:
+        - name: OTEL_SERVICE_NAME
+          value: trace-generator
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: service.env=dev,service.version=v0.0.1
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: http://otel-coll-basic.opentelemetry.svc.cluster.local:4318
