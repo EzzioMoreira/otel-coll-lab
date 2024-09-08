@@ -34,7 +34,6 @@ delete-cluster          "Delete the Kubernetes cluster"
 To create a local Kubernetes cluster, run:
 
 ```bash
-Copiar código
 make create-cluster
 ```
 
