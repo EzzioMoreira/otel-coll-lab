@@ -1,27 +1,21 @@
 # 📊 Grafana Stack Deployment
 
-This directory contains the Helm chart `values.yaml` files for deploying the Grafana stack, which includes:
+This directory contains the Helm chart `values.yaml` files for deploying the Grafana stack:
 
 - **Grafana Web**: The main UI for visualizing telemetry data (traces, logs, and metrics).
 - **Grafana Tempo**: Distributed tracing backend for managing and viewing traces.
 - **Grafana Loki**: Log aggregation system for managing logs.
-- **Prometheus**: Metrics collection and monitoring system.
+- **Prometheus**: Metrics aggregation and TSDB.
 
 ```mermaid
-graph TD
-    subgraph Grafana Stack
-        A[Grafana Web] --> B[Grafana Tempo (Traces)]
-        A --> C[Grafana Loki (Logs)]
-        A --> D[Prometheus (Metrics)]
-    end
-    
-    E[Applications] -->|Traces| B
-    E -->|Logs| C
-    E -->|Metrics| D
-    
-    B -->|Visualizes| A
-    C -->|Visualizes| A
-    D -->|Visualizes| A
+---
+title: Grafana Stack
+---
+graph LR
+
+A[Grafana Web] --> |Traces|B[(Grafana Tempo)]
+A[Grafana Web] --> |Logs|C[(Grafana Loki)]
+A[Grafana Web] --> |Metrics|D[(Prometheus)]
 ```
 
 ## 🚀 Deployment Steps
