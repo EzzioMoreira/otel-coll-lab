@@ -23,9 +23,13 @@ data:
 
       otlp/tempo:
         endpoint: tempo.monitoring.svc.cluster.local:4317
+        tls:
+          insecure: true
       
       otlphttp/loki:
         endpoint: http://loki.monitoring.com:3100/otlp/v1/logs
+        tls:
+          insecure: true
       
       prometheusremotewrite:
         endpoint: http://prometheus.monitoring.svc.cluster.local:9090/api/v1/write
@@ -34,16 +38,14 @@ data:
 
     extensions:
       health_check:
-      pprof:
-      zpages:
 
     service:
-      extensions: [health_check, pprof, zpages]
+      extensions: [health_check]
       pipelines:
         traces:
           receivers: [otlp]
           processors: [batch]
-          exporters: [otlp/tempo, debug]
+          exporters: [otlp/tempo]
         metrics:
           receivers: [otlp]
           processors: [batch]
