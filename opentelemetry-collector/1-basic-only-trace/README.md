@@ -10,8 +10,8 @@ title: Otel Coll basic
 graph TD
 
 A[App Trace Generator] -->|Traces|B[Opentelemetry Collector]
-B -->|Trace-Stdout|B
 B -->|Traces|C[(Grafana Tempo)]
+B -->|Exporter Debug|D[Trace Stdout]
 ```
 
 ## Components 🧩 
